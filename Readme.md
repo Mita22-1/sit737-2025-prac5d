@@ -1,64 +1,63 @@
-# SIT737-2025 Prac 5.1P – Containerized Calculator Microservice
+# SIT737 - Cloud Native Application Development
+## Practical Task 5D - Containerization and Docker Image Deployment
 
-This project demonstrates containerising a Node.js calculator microservice using Docker, 
-with health monitoring and automatic restart capabilities. It provides a web-based UI for 
-entering numbers and selecting operations, and logs all user activity using Winston.
+**Author:** Mitali Kaur  
+**Deakin ID:** s224582251  
+**GitHub Repository:** [https://github.com/Mita22-1/sit737-2025-prac5d](https://github.com/Mita22-1/sit737-2025-prac5d)
+
+---
+
+## Task Overview
+
+In this task, we:
+- Containerized a Node.js calculator web application
+- Built the Docker image locally
+- Pushed the Docker image to **Google Cloud Artifact Registry**
 
 ---
 
 ## Prerequisites
 
-- [Docker Desktop](https://www.docker.com/products/docker-desktop)
-- [Node.js](https://nodejs.org/) (for local development & testing)
-- [Git](https://git-scm.com/) (for cloning the repo)
+- Google Cloud SDK (`gcloud`)
+- Docker installed and running
+- Python installed (required by `gcloud`)
+- Node.js installed
+- Google Cloud Project created
 
 ---
 
-## Installation
+## Steps Performed
 
-1. **Clone the repository:**
-```bash
-git clone https://github.com/Mita22-1/sit737-2025-prac5p.git
-cd sit737-2025-prac5p
+### 1. Clone the Repository
 
----
+git clone https://github.com/Mita22-1/sit737-2025-prac5d.git
+cd sit737-2025-prac5d
 
-## Run the app using docker compose
+### 2. Authenticate with Google Cloud
 
-```bash
-docker-compose up --build
+gcloud auth login
+gcloud config set project sit737-25t1-mitali-kau-0aeda9f
 
----
+### 3. Enable Artifact Registry API
 
-## Open app on browser
+gcloud services enable artifactregistry.googleapis.com
 
-http://localhost:3111
+### 4. Create Docker Repository on Google Cloud
 
----
+gcloud artifacts repositories create sit737-2025-prac5d \
+  --repository-format=docker \
+  --location=australia-southeast1 \
+  --description="Docker repository" \
+  --project=sit737-25t1-mitali-kau-0aeda9f
 
-## Health Check
+### 5. Build and Tag Docker Image
 
-```bash 
-GET http://localhost:3111/health
+docker build -t australia-southeast1-docker.pkg.dev/sit737-25t1-mitali-kau-0aeda9f/sit737-2025-prac5d/calculator-app:latest .
 
----
+### 6. Configure Docker Authentication
 
-## Project Structure
+gcloud auth configure-docker australia-southeast1-docker.pkg.dev
 
-```bash 
-├── Dockerfile               # Image configuration
-├── docker-compose.yml       # Service and healthcheck
-├── server.js                # Backend with Winston logging
-├── calculator.html          # Frontend (served via Express)
-├── package.json             # Node dependencies
-├── server.log               # Logging file output
-├── README.md                # Project documentation
+### 7. Push Docker Image to Artifact Registry
 
----
-
-## Developed By:
-
-Mitali Kaur
-SIT737 Cloud Native Application Development
-T1, 2025
-Deakin University
+docker push australia-southeast1-docker.pkg.dev/sit737-25t1-mitali-kau-0aeda9f/sit737-2025-prac5d/calculator-app:latest
